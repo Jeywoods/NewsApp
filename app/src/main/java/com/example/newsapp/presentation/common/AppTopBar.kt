@@ -1,4 +1,3 @@
-
 package com.example.newsapp.presentation.common
 
 import androidx.compose.foundation.layout.Row

@@ -2,7 +2,6 @@ package com.example.newsapp.presentation.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Общий акцент приложения
 val NewsBlue = Color(0xFF34465E)
 val NewsBlueDark = Color(0xFFA9BCD2)
 

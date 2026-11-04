@@ -1,4 +1,3 @@
-
 package com.example.newsapp.data.mapper
 
 import com.example.newsapp.data.local.entity.CategoryEntity

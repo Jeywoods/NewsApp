@@ -1,4 +1,3 @@
-
 package com.example.newsapp.presentation.navigation
 
 import android.net.Uri
