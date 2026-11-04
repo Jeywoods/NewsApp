@@ -13,7 +13,7 @@ import com.example.newsapp.presentation.theme.NewsAppTheme
 class MainActivity : ComponentActivity() {
 
     private val appContainer by lazy {
-        AppContainer()
+        AppContainer(applicationContext)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
