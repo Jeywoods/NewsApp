@@ -2,6 +2,18 @@
 
 Android-приложение для просмотра новостей по категориям и чтения полных публикаций.
 
+
+## Скриншоты приложения
+
+### Категории
+![Экран категорий](app/src/main/res/screenshots/CategoriesScreen.jpg)
+
+### Список новостей
+![Список новостей](app/src/main/res/screenshots/NewsScreen.jpg)
+
+### Подробная информация о новости
+![Экран подробной новости](app/src/main/res/screenshots/DetailsNewsScreen.jpg)
+
 ## Функциональность
 
 - Просмотр списка категорий.
