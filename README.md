@@ -5,14 +5,11 @@ Android-приложение для просмотра новостей по к�
 
 ## Скриншоты приложения
 
-### Категории
-![Экран категорий](app/src/main/res/screenshots/CategoriesScreen.jpg)
-
-### Список новостей
-![Список новостей](app/src/main/res/screenshots/NewsScreen.jpg)
-
-### Подробная информация о новости
-![Экран подробной новости](app/src/main/res/screenshots/DetailsNewsScreen.jpg)
+<p align="center">
+  <img src="app/src/main/res/screenshots/CategoriesScreen.jpg" width="30%" alt="Экран категорий" />
+  <img src="app/src/main/res/screenshots/NewsScreen.jpg" width="30%" alt="Список новостей" />
+  <img src="app/src/main/res/screenshots/DetailsNewsScreen.jpg" width="30%" alt="Подробная информация о новости" />
+</p>
 
 ## Функциональность
 
