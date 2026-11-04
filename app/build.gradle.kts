@@ -54,6 +54,9 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
 
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+
+    implementation(libs.androidx.navigation.compose)
     //Network
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.gson)
