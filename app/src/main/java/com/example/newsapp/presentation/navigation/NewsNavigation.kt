@@ -94,6 +94,9 @@ fun NewsNavigation(
                                 "&date=${Uri.encode(news.date)}" +
                                 "&shortDescription=${Uri.encode(news.shortDescription)}"
                     )
+                },
+                onBackClick = {
+                    navController.popBackStack()
                 }
             )
         }

@@ -1,15 +1,17 @@
-
 package com.example.newsapp.presentation.categories
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -32,15 +34,30 @@ fun CategoriesScreen(
     val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 16.dp)
+                    .statusBarsPadding()
+                    .padding(
+                        start = 24.dp,
+                        end = 24.dp,
+                        top = 28.dp,
+                        bottom = 24.dp
+                    ),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
-                    text = "Категории новостей",
-                    style = MaterialTheme.typography.headlineSmall
+                    text = "Новости",
+                    style = MaterialTheme.typography.headlineLarge,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+
+                Text(
+                    text = "Выберите интересующую вас категорию",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.secondary
                 )
             }
         }
@@ -54,7 +71,8 @@ fun CategoriesScreen(
             when {
                 uiState.isLoading -> {
                     CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.Center)
+                        modifier = Modifier.align(Alignment.Center),
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
 
@@ -80,7 +98,8 @@ fun CategoriesScreen(
                 uiState.categories.isEmpty() -> {
                     Text(
                         text = "Категории не найдены",
-                        modifier = Modifier.align(Alignment.Center)
+                        modifier = Modifier.align(Alignment.Center),
+                        color = MaterialTheme.colorScheme.secondary
                     )
                 }
 
@@ -88,28 +107,45 @@ fun CategoriesScreen(
                     LazyColumn(
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        items(
+                        itemsIndexed(
                             items = uiState.categories,
-                            key = { it.id }
-                        ) { category ->
-                            Column(
+                            key = { _, category -> category.id }
+                        ) { index, category ->
+
+                            Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clickable {
                                         onCategoryClick(category)
                                     }
                                     .padding(
-                                        horizontal = 20.dp,
-                                        vertical = 18.dp
-                                    )
+                                        horizontal = 24.dp,
+                                        vertical = 22.dp
+                                    ),
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
                                     text = category.name,
-                                    style = MaterialTheme.typography.titleMedium
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.onBackground
+                                )
+
+                                Spacer(modifier = Modifier.weight(1f))
+
+                                Text(
+                                    text = "›",
+                                    style = MaterialTheme.typography.headlineMedium,
+                                    color = MaterialTheme.colorScheme.primary
                                 )
                             }
 
-                            HorizontalDivider()
+                            if (index != uiState.categories.lastIndex) {
+                                HorizontalDivider(
+                                    modifier = Modifier.padding(horizontal = 24.dp),
+                                    color = MaterialTheme.colorScheme.outline,
+                                    thickness = 1.dp
+                                )
+                            }
                         }
                     }
                 }

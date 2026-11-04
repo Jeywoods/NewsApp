@@ -1,7 +1,6 @@
 
 package com.example.newsapp.presentation.news
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,44 +26,57 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.newsapp.domain.model.News
-import java.text.SimpleDateFormat
-import java.util.Locale
-import java.util.TimeZone
+import com.example.newsapp.presentation.common.AppTopBar
 
 @Composable
 fun NewsScreen(
     categoryName: String,
     viewModel: NewsViewModel,
-    onNewsClick: (News) -> Unit
+    onNewsClick: (News) -> Unit,
+    onBackClick: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val listState = rememberLazyListState()
 
-    LaunchedEffect(listState, uiState.news.size, uiState.hasMorePages) {
+
+    LaunchedEffect(
+        listState,
+        uiState.news.size,
+        uiState.hasMorePages,
+        uiState.isLoading,
+        uiState.isLoadingMore,
+        uiState.error
+    ) {
         snapshotFlow {
-            val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
+            val lastVisibleItem =
+                listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
+
             val totalItems = listState.layoutInfo.totalItemsCount
 
-            lastVisibleItem != null && lastVisibleItem >= totalItems - 3
+            val shouldLoadMore = lastVisibleItem != null &&
+                    lastVisibleItem >= totalItems - 3
+
+            shouldLoadMore &&
+                    uiState.hasMorePages &&
+                    !uiState.isLoading &&
+                    !uiState.isLoadingMore &&
+                    uiState.error == null
         }.collect { shouldLoadMore ->
-            if (shouldLoadMore && uiState.hasMorePages) {
+            if (shouldLoadMore) {
                 viewModel.loadNews()
             }
         }
     }
 
+
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
+
         topBar = {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 16.dp)
-            ) {
-                Text(
-                    text = categoryName,
-                    style = MaterialTheme.typography.headlineSmall
-                )
-            }
+            AppTopBar(
+                title = categoryName,
+                onBackClick = onBackClick
+            )
         }
     ) { paddingValues ->
 
@@ -76,7 +88,8 @@ fun NewsScreen(
             when {
                 uiState.isLoading && uiState.news.isEmpty() -> {
                     CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.Center)
+                        modifier = Modifier.align(Alignment.Center),
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
 
@@ -91,7 +104,9 @@ fun NewsScreen(
                             color = MaterialTheme.colorScheme.error
                         )
 
-                        TextButton(onClick = viewModel::loadNews) {
+                        TextButton(
+                            onClick = viewModel::loadNews
+                        ) {
                             Text("Повторить")
                         }
                     }
@@ -100,7 +115,8 @@ fun NewsScreen(
                 uiState.news.isEmpty() -> {
                     Text(
                         text = "В этой категории пока нет новостей",
-                        modifier = Modifier.align(Alignment.Center)
+                        modifier = Modifier.align(Alignment.Center),
+                        color = MaterialTheme.colorScheme.secondary
                     )
                 }
 
@@ -108,40 +124,24 @@ fun NewsScreen(
                     LazyColumn(
                         state = listState,
                         modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(vertical = 8.dp)
+                        contentPadding = PaddingValues(
+                            start = 24.dp,
+                            end = 24.dp,
+                            bottom = 24.dp
+                        )
                     ) {
                         items(
                             items = uiState.news,
                             key = { it.id }
                         ) { news ->
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable { onNewsClick(news) }
-                                    .padding(
-                                        horizontal = 20.dp,
-                                        vertical = 16.dp
-                                    ),
-                                verticalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                Text(
-                                    text = news.title,
-                                    style = MaterialTheme.typography.titleMedium
-                                )
+                            NewsItem(
+                                news = news,
+                                onClick = { onNewsClick(news) }
+                            )
 
-                                Text(
-                                    text = formatNewsDate(news.date),
-                                    style = MaterialTheme.typography.labelMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-
-                                Text(
-                                    text = news.shortDescription,
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                            }
-
-                            HorizontalDivider()
+                            HorizontalDivider(
+                                color = MaterialTheme.colorScheme.outline
+                            )
                         }
 
                         if (uiState.isLoadingMore) {
@@ -149,10 +149,12 @@ fun NewsScreen(
                                 Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(16.dp),
+                                        .padding(24.dp),
                                     contentAlignment = Alignment.Center
                                 ) {
-                                    CircularProgressIndicator()
+                                    CircularProgressIndicator(
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
                                 }
                             }
                         }
@@ -162,15 +164,19 @@ fun NewsScreen(
                                 Column(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(16.dp),
-                                    horizontalAlignment = Alignment.CenterHorizontally
+                                        .padding(24.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
                                     Text(
-                                        text = uiState.error ?: "Ошибка загрузки",
+                                        text = uiState.error
+                                            ?: "Ошибка загрузки",
                                         color = MaterialTheme.colorScheme.error
                                     )
 
-                                    TextButton(onClick = viewModel::loadNews) {
+                                    TextButton(
+                                        onClick = viewModel::loadNews
+                                    ) {
                                         Text("Повторить")
                                     }
                                 }
@@ -180,28 +186,5 @@ fun NewsScreen(
                 }
             }
         }
-    }
-}
-
-private fun formatNewsDate(value: String): String {
-    return try {
-        val inputFormat = SimpleDateFormat(
-            "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
-            Locale.getDefault()
-        ).apply {
-            timeZone = TimeZone.getTimeZone("UTC")
-        }
-
-        val outputFormat = SimpleDateFormat(
-            "dd.MM.yyyy HH:mm",
-            Locale.getDefault()
-        ).apply {
-            timeZone = TimeZone.getDefault()
-        }
-
-        val date = inputFormat.parse(value)
-        if (date != null) outputFormat.format(date) else value
-    } catch (exception: Exception) {
-        value
     }
 }
